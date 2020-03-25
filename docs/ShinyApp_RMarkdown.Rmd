@@ -1,0 +1,34 @@
+---
+title: "Shiny HTML"
+author: "Your Name"
+runtime: shiny
+output: html_document
+---
+
+Here is an example of a shiny app embedded in a R Markdown document.
+
+```{r}
+library(shiny)
+library(ggplot2)
+data.in <- read.csv('http://math.montana.edu/ahoegh/teaching/stat408/datasets/SeattleHousing.csv')
+data.in$zipcode <- as.factor(data.in$zipcode)
+data.in$waterfront <- as.factor(data.in$waterfront)
+scatter <- ggplot(data=data.in , aes(price,sqft_living))
+```
+
+
+```{r}
+sidebarLayout(
+  sidebarPanel(
+    textInput('main', 'Main title', value = 'my boring plot'),
+    selectInput('variable', 'Variable Color - pick one', choices=c('waterfront','zipcode'), selected = 'zipcode'),
+    selectInput('variable2', 'Variable For Faceting - pick one', choices=c('waterfront','zipcode'), selected = 'zipcode')
+  ),
+  mainPanel(
+    renderPlot(ggplot(data=data.in , aes(price,sqft_living))  + geom_point(aes(col=get(input$variable)))  + labs(title = input$main) + scale_color_discrete(name = input$variable) + facet_wrap(~get(input$variable2))
+  )
+)
+)
+```
+
+You have created a graph named **`r renderText(input$main)`** which is colored by *`r renderText(input$variable)`* and faceted by *`r renderText(input$variable2)`*.
